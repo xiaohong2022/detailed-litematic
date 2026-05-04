@@ -10,4 +10,5 @@ export default defineConfig({
       style: 'css'
     })
   ],
+  base: '/detailed-litematic/'
 })
