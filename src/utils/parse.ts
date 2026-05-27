@@ -212,7 +212,7 @@ export function getItemMatirial(region: LitematicRegion) {
     return result;
 }
 
-function getNamespaceId(namespace: string){
+function getNamespaceId(namespace: string) {
     return String(namespace.split("minecraft:")[1]);
 }
 
@@ -738,15 +738,40 @@ function parseEntityToItem(entity: LitematicEntity): ParsedItem[] | null {
         || entity.id === "minecraft:spawner_minecart"
     ) {
         result.push({
-            id:entityId,
+            id: entityId,
         })
 
     }
-    // 盔甲架，目前貌似没有什么用处，就不判断盔甲内容了
+    // 盔甲架
     else if (entity.id === "minecraft:armor_stand") {
         result.push({
             id: 'armor_stand',
         })
+
+        // 盔甲架的装备
+        const items: any[] = [];
+        if (entity.equipment) {
+            // 将所有槽位的物品放到一块处理
+            for (let evalue of entity.equipment) {
+                items.push(evalue);
+            }
+        }
+
+        // 由于1.9之后盔甲架不再使用equipment标签来存储装备物品，这里直接是否存在
+        if (entity.HandItems) items.push(...entity.HandItems);
+        if (entity.ArmorItems) items.push(...entity.ArmorItems);
+
+        for (let item of items) {
+            if (!item.id) continue; // 无物品则跳过
+            for (let i = 0; i < (item.count || 1); i++) {
+                result.push({
+                    id: getNamespaceId(item.id),
+                    within: 'armor_stand',
+                    container: true // 在容器内物品
+                });
+            }
+        }
+
     }
     // 船
     else if (entity.id.endsWith("_boat")) {
@@ -870,6 +895,8 @@ function parseEntityToItem(entity: LitematicEntity): ParsedItem[] | null {
                 within: item
             })
         }
+
+        // TODO：部分生物可能还需要捡起物品（如村民交易所的僵尸需要捡个斧）
 
     }
 
