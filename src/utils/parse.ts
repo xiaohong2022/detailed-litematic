@@ -580,35 +580,41 @@ function parseBlockToItem({ Name, Properties }: LitematicBlockStatePalette): Par
 
     // 床，特殊的是，一张床占两个同id方块，且有床头和床脚两种状态。
     // 由于只有床头破坏时才会掉落，这里就算床头了
-    else if (Name.endsWith("_bed") && Properties.part === "head") {
-        result.push({
-            id: String(Name.split("minecraft:")[1])
-        })
+    else if (Name.endsWith("_bed")) {
+        if (Properties.part === "head")
+            result.push({
+                id: String(Name.split("minecraft:")[1])
+            })
     }
 
 
     // 门，也是非常特殊，有上下两个部分
     // 由于只有下半部分破坏时才会掉落，这里就算下半部分了
-    else if (Name.endsWith("__door") && Properties.half === "lower") {
-        result.push({
-            id: String(Name.split("minecraft:")[1])
-        })
+    else if (Name.endsWith("_door")) {
+        if (Properties.half === "lower")
+            result.push({
+                id: String(Name.split("minecraft:")[1])
+            })
     }
+
     // 瓶子草也是
-    else if (Name == "minecraft:pitcher_plant" && Properties.half === "lower") {
-        result.push({
-            id: "pitcher_plant"
-        })
-    }
-    else if (Name == "minecraft:pitcher_crop" && Properties.half === "lower") {
-        if (Properties.age === "4") {
+    else if (Name == "minecraft:pitcher_plant") {
+        if (Properties.half === "lower")
             result.push({
                 id: "pitcher_plant"
             })
-        } else {
-            result.push({
-                id: "pitcher_pod"
-            })
+    }
+    else if (Name == "minecraft:pitcher_crop") {
+        if (Properties.half === "lower") {
+            if (Properties.age === "4") {
+                result.push({
+                    id: "pitcher_plant"
+                })
+            } else {
+                result.push({
+                    id: "pitcher_pod"
+                })
+            }
         }
     }
 
