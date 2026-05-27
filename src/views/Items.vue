@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Select, Table } from '@arco-design/web-vue';
+import { Select, Table, Checkbox } from '@arco-design/web-vue';
 import type { Litematic, LitematicRegion } from '../types'
 import { formatItemNumber, getItemMaxStackSize, isUseOnlyItem, itemIdToImageURL, itemIdToName } from '../utils/item';
 import { getItemMatirial } from '../utils/parse';
@@ -213,9 +213,9 @@ const totalGroups = computed(() => {
                 <div v-if="column.title == '物品'">
                     <span style="margin-left: 4px">总计</span><br>
                     <div style="display: flex; flex-direction: row;margin-top: 4px; flex-wrap: wrap; gap: 2px">
-                        <a-checkbox v-model="useInfinityWater">使用无限水</a-checkbox>
-                        <a-checkbox v-model="ignoreContainer">忽略填充</a-checkbox>
-                        <a-checkbox v-model="ignoreTechnicalItem">忽略管理员物品</a-checkbox>
+                        <Checkbox v-model="useInfinityWater">使用无限水</Checkbox>
+                        <Checkbox v-model="ignoreContainer">忽略填充</Checkbox>
+                        <Checkbox v-model="ignoreTechnicalItem">忽略管理员物品</Checkbox>
                     </div>
                 </div>
                 <span v-else>{{ totalNum }}, 约 {{ (totalGroups / 27).toFixed(2) }} 潜影盒</span>
