@@ -25,6 +25,7 @@ const CUSTOM_NAME: Record<string, string> = {
     "ender_eye": "Eye_of_Ender",
     "experience_bottle": "Bottle_o%27_Enchanting",
 
+    "milk_bucket": "Milk",
     "axolotl_bucket": "Bucket_of_Axolotl",
     "tadpole_bucket": "Bucket_of_Tadpole",
     "salmon_bucket": "Bucket_of_Tadpole",
@@ -150,6 +151,7 @@ const CUSTOM_NAME: Record<string, string> = {
     "endermite_spawn_egg": "Endermite_Spawn_Egg_Revision_2",
     "shulker_spawn_egg": "Shulker_Spawn_Egg_Revision_3",
 
+    // 染料
     "white_dye": "White_Dye_Revision_2",
     "light_gray_dye": "Light_Gray_Dye_Revision_2",
     "gray_dye": "Gray_Dye_Revision_2",
@@ -167,6 +169,7 @@ const CUSTOM_NAME: Record<string, string> = {
     "magenta_dye": "Magenta_Dye_Revision_2",
     "pink_dye": "Pink_Dye_Revision_2",
 
+    // 石头
     "infested_cobblestone": "Cobblestone",
     "stone": "Infested_Stone",
     "stone_bricks": "Infested_Stone_Bricks",
@@ -194,6 +197,7 @@ const CUSTOM_NAME: Record<string, string> = {
     "frogspawn": "Frog_Spawn",
     "hay_block": "Hay_Bale",
     "map": "Empty_Locator_Map",
+    "filled_map": "Buried_Treasure_Map",
     "writable_book": "Book_and_Quill",
     "dragon_breath": "Dragon%27s_Breath",
     "rabbit_foot": "Rabbit%27s_Foot",
@@ -204,6 +208,12 @@ const CUSTOM_NAME: Record<string, string> = {
     "clay_ball": "Clay_%28ball%29",
     "music_disc_creator_music_box": "Music_Disc_Creator_%28Music_Box%29",
     "potion": "Awkward_Potion",
+
+    // 皮革胸甲
+    "leather_helmet": "Leather_Cap",
+    "leather_chestplate": "Leather_Tunic",
+    "leather_leggings": "Leather_Pants",
+    "leather_boots": "Leather_Boots",
 
     // 兼容
     "chain": "Iron_Chain"
@@ -232,8 +242,8 @@ export function itemIdToImageURL(id: string) {
         else return toFirstUpperCase(v);
     }).join("_");
 
-    if (name.startsWith("Waxed_") ) name = String(name.split("Waxed_")[1])
-    if (name.startsWith("Weathered_") ) name = "Waxed_" + name
+    if (name.startsWith("Waxed_")) name = String(name.split("Waxed_")[1])
+    if (name.startsWith("Weathered_")) name = "Waxed_" + name
     // if (id == "waxed_weathered_copper_bulb") name = "Waxed_Weathered_Copper_Bulb" // 特例
 
     return `https://zh.minecraft.wiki/images/Invicon_${name}.${gif.includes(id) ? 'gif' : 'png'}`
