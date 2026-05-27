@@ -212,10 +212,16 @@ export function getItemMatirial(region: LitematicRegion) {
     return result;
 }
 
+function getNamespaceId(namespace: string){
+    return String(namespace.split("minecraft:")[1]);
+}
+
 function parseBlockToItem({ Name, Properties }: LitematicBlockStatePalette): ParsedItem[] | null {
     Properties = Properties || {};
 
     let result: ParsedItem[] = [];
+
+    const itemId = getNamespaceId(Name);
 
 
     // 技术性方块
@@ -259,7 +265,7 @@ function parseBlockToItem({ Name, Properties }: LitematicBlockStatePalette): Par
     // 营火
     else if (Name === 'minecraft:campfire' || Name === "minecraft:soul_campfire") {
         result.push({
-            id: String(Name.split("minecraft:")[1])
+            id: itemId
         })
 
         // 如果灭了，并且没含水，则需要用到铲子
@@ -276,7 +282,7 @@ function parseBlockToItem({ Name, Properties }: LitematicBlockStatePalette): Par
         // 蜡烛也是可以叠放的
         for (let i = 0; i > Number(Properties.candles); i++) {
             result.push({
-                id: String(Name.split("minecraft:")[1])
+                id: itemId
             })
         }
 
@@ -284,7 +290,7 @@ function parseBlockToItem({ Name, Properties }: LitematicBlockStatePalette): Par
         if (Properties.lit === "true") {
             result.push({
                 id: "flint_and_steel",
-                within: String(Name.split("minecraft:")[1])
+                within: itemId
             })
         }
     }
@@ -474,7 +480,7 @@ function parseBlockToItem({ Name, Properties }: LitematicBlockStatePalette): Par
         // 按照个数添加
         for (let i = 0; i < Number(Properties.segment_amount); i++) {
             result.push({
-                id: String(Name.split("minecraft:")[1])
+                id: itemId
             });
         }
     }
@@ -583,7 +589,7 @@ function parseBlockToItem({ Name, Properties }: LitematicBlockStatePalette): Par
     else if (Name.endsWith("_bed")) {
         if (Properties.part === "head")
             result.push({
-                id: String(Name.split("minecraft:")[1])
+                id: itemId
             })
     }
 
@@ -593,7 +599,7 @@ function parseBlockToItem({ Name, Properties }: LitematicBlockStatePalette): Par
     else if (Name.endsWith("_door")) {
         if (Properties.half === "lower")
             result.push({
-                id: String(Name.split("minecraft:")[1])
+                id: itemId
             })
     }
 
@@ -636,9 +642,9 @@ function parseBlockToItem({ Name, Properties }: LitematicBlockStatePalette): Par
     // 台阶，一般都有后缀名_slab
     else if (Name.endsWith("_slab") && Properties.type == "double") {
         result.push({
-            id: String(Name.split("minecraft:")[1])
+            id: itemId
         }, {
-            id: String(Name.split("minecraft:")[1])
+            id: itemId
         })
     }
 
@@ -652,7 +658,7 @@ function parseBlockToItem({ Name, Properties }: LitematicBlockStatePalette): Par
     else {
         // 没有特殊处理的话，都是方块和物品同一个id了
         result.push({
-            id: String(Name.split("minecraft:")[1])
+            id: itemId
         });
     }
 
@@ -660,7 +666,7 @@ function parseBlockToItem({ Name, Properties }: LitematicBlockStatePalette): Par
     // 含水检测，有waterlogged: true的话一般都是含水方块
     if (Properties.waterlogged === "true") result.push({
         id: "water_bucket",
-        within: String(Name.split("minecraft:")[1])
+        within: itemId
     })
 
 
@@ -674,6 +680,8 @@ function parseBlockToItem({ Name, Properties }: LitematicBlockStatePalette): Par
 function parseEntityToItem(entity: LitematicEntity): ParsedItem[] | null {
     let result: ParsedItem[] = [];
 
+    const entityId = getNamespaceId(entity.id)
+
     if (entity.id === "minecraft:item_frame") {
         result.push({
             id: "item_frame",
@@ -682,7 +690,7 @@ function parseEntityToItem(entity: LitematicEntity): ParsedItem[] | null {
         if (entity.Item) {
             for (let i = 0; i < entity.Item.count; i++) {
                 result.push({
-                    id: String(entity.Item.id.split("minecraft:")[1]),
+                    id: getNamespaceId(entity.Item.id),
                     within: "item_frame",
                     container: true // 在容器内物品
                 });
@@ -710,14 +718,14 @@ function parseEntityToItem(entity: LitematicEntity): ParsedItem[] | null {
     // 容器矿车
     else if (entity.id === "minecraft:hopper_minecart" || entity.id === "minecraft:chest_minecart") {
         result.push({
-            id: String(entity.id.split("minecraft:")[1]),
+            id: entityId,
         })
 
         for (let item of entity.Items) {
             for (let i = 0; i < item.count; i++) {
                 result.push({
-                    id: String(item.id.split("minecraft:")[1]),
-                    within: String(entity.id.split("minecraft:")[1]),
+                    id: getNamespaceId(item.id),
+                    within: entityId,
                     container: true // 在容器内物品
                 });
             }
@@ -730,7 +738,7 @@ function parseEntityToItem(entity: LitematicEntity): ParsedItem[] | null {
         || entity.id === "minecraft:spawner_minecart"
     ) {
         result.push({
-            id: String(entity.id.split("minecraft:")[1]),
+            id:entityId,
         })
 
     }
@@ -743,7 +751,7 @@ function parseEntityToItem(entity: LitematicEntity): ParsedItem[] | null {
     // 船
     else if (entity.id.endsWith("_boat")) {
         result.push({
-            id: String(entity.id.split("minecraft:")[1]),
+            id: entityId,
         })
 
         // 船有乘客
@@ -752,7 +760,7 @@ function parseEntityToItem(entity: LitematicEntity): ParsedItem[] | null {
                 let res = parseEntityToItem(passenger)
                 if (res) result.push(...res.map(v => ({
                     ...v,
-                    within: String(entity.id.split("minecraft:")[1])
+                    within: entityId
                 })))
             }
         }
@@ -848,7 +856,7 @@ function parseEntityToItem(entity: LitematicEntity): ParsedItem[] | null {
         ].includes(String(entity.id.split("minecraft:")[1]))
 
     ) {
-        let item = String(entity.id.split("minecraft:")[1]) + "_spawn_egg"
+        let item = getNamespaceId(entity.id) + "_spawn_egg"
 
         // 生物以刷怪蛋的形式显示
         result.push({
@@ -872,15 +880,13 @@ function parseEntityToItem(entity: LitematicEntity): ParsedItem[] | null {
 function parseTileEntityToItem(entity: LitematicTileEntity, blockId: string): ParsedItem[] | null {
     let result = [];
 
-    const id = blockId;
-
     // 方块实体一般都是容器类的，所以就简简单单了
     if (entity.Items) {
         for (let item of entity.Items) {
             for (let i = 0; i < item.count; i++) {
                 result.push({
-                    id: String(item.id.split("minecraft:")[1]),
-                    within: id,
+                    id: getNamespaceId(item.id),
+                    within: blockId,
                     container: true // 在容器内物品
                 });
             }
@@ -888,12 +894,12 @@ function parseTileEntityToItem(entity: LitematicTileEntity, blockId: string): Pa
     }
 
     // 陶罐
-    if (id === "decorated_pot") {
+    if (blockId === "decorated_pot") {
         if (entity.item) {
             for (let i = 0; i < entity.item.count; i++) {
                 result.push({
-                    id: String(entity.item.id.split("minecraft:")[1]),
-                    within: id,
+                    id: getNamespaceId(entity.item.id),
+                    within: blockId,
                     container: true // 在容器内物品
                 });
             }
@@ -901,51 +907,51 @@ function parseTileEntityToItem(entity: LitematicTileEntity, blockId: string): Pa
     }
 
     // 酿造台
-    else if (id === "brewing_stand") {
+    else if (blockId === "brewing_stand") {
         // 若剩余能量不为0，则额外需要一个烈焰粉
         if (entity.Fuel && entity.Fuel > 0) {
             result.push({
                 id: "blaze_powder",
-                within: id,
+                within: blockId,
                 container: true // 在容器内物品
             })
         }
     }
 
     // 讲台
-    else if (id === "lectern") {
+    else if (blockId === "lectern") {
         // 讲台上的书
         if (entity.Book) {
             // 不考虑堆叠情况
             result.push({
-                id: String(entity.Book.id.split("minecraft:")[1]),
-                within: id,
+                id: getNamespaceId(entity.Book.id),
+                within: blockId,
                 container: true // 在容器内物品
             });
         }
     }
 
     // 唱片机
-    else if (id === "jukebox") {
+    else if (blockId === "jukebox") {
         // 唱片机上的唱片
         if (entity.RecordItem) {
             // 不考虑堆叠情况
             result.push({
-                id: String(entity.RecordItem.id.split("minecraft:")[1]),
-                within: id,
+                id: getNamespaceId(entity.RecordItem.id),
+                within: blockId,
                 container: true // 在容器内物品
             });
         }
     }
 
     // 告示牌
-    else if (id.endsWith("_sign")) {
+    else if (blockId.endsWith("_sign")) {
         const side = (text: any) => {
             // 需要荧光墨囊
             if (text.has_glowing_text == 1) {
                 result.push({
                     id: 'glow_ink_sac',
-                    within: id,
+                    within: blockId,
                 })
             }
 
@@ -953,7 +959,7 @@ function parseTileEntityToItem(entity: LitematicTileEntity, blockId: string): Pa
             if (text.color != "black") {
                 result.push({
                     id: `${text.color}_dye`,
-                    within: id,
+                    within: blockId,
                 })
             }
         }
@@ -965,7 +971,7 @@ function parseTileEntityToItem(entity: LitematicTileEntity, blockId: string): Pa
         if (entity.is_waxed == 1) {
             result.push({
                 id: 'honeycomb',
-                within: id,
+                within: blockId,
             })
         }
     }
